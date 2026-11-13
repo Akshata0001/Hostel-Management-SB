@@ -1,0 +1,638 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hostel Management System</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    margin: 0;
+    background: #f3f5fb;
+    color: #252b42;
+}
+
+header {
+    background: #26356b;
+    color: white;
+    padding: 22px 35px;
+}
+
+header h1 {
+    margin: 0;
+}
+
+header p {
+    margin-bottom: 0;
+    color: #dce3ff;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 0 18px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.stat, .panel {
+    background: white;
+    padding: 22px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px #00000010;
+}
+
+.stat h3 {
+    margin: 0;
+    color: #68718a;
+    font-size: 15px;
+}
+
+.stat p {
+    font-size: 25px;
+    font-weight: bold;
+    color: #26356b;
+}
+
+.panel {
+    margin-bottom: 25px;
+}
+
+h2 {
+    color: #26356b;
+    margin-top: 0;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d5d9e5;
+    border-radius: 7px;
+    margin-top: 6px;
+}
+
+button {
+    background: #4055a5;
+    color: white;
+    border: none;
+    padding: 11px 17px;
+    border-radius: 7px;
+    cursor: pointer;
+    margin: 8px 5px 0 0;
+}
+
+button:hover {
+    opacity: 0.85;
+}
+
+.delete {
+    background: #d94343;
+}
+
+.edit {
+    background: #198754;
+}
+
+.secondary {
+    background: #667085;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    min-width: 750px;
+}
+
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e7ef;
+    text-align: left;
+}
+
+th {
+    background: #edf0fa;
+    color: #26356b;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+.message {
+    margin-top: 15px;
+    font-weight: bold;
+    color: #198754;
+}
+
+.reports {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Updated professional report design */
+#reportMessage {
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+#reportMessage h3 {
+    color: #26356b;
+    margin-bottom: 15px;
+}
+
+#reportMessage table {
+    width: 100%;
+    min-width: 750px;
+    background: white;
+    border-collapse: collapse;
+}
+
+#reportMessage th {
+    background: #26356b;
+    color: white;
+}
+
+#reportMessage td,
+#reportMessage th {
+    padding: 14px;
+    text-align: center;
+    border-bottom: 1px solid #e5e7ef;
+}
+
+#reportMessage tbody tr:hover {
+    background: #f1f4ff;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #777;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Hostel Management System</h1>
+    <p>Student Records | Room Allocation | Fee Management</p>
+</header>
+
+<div class="container">
+
+    <div class="stats">
+        <div class="stat">
+            <h3>Total Students</h3>
+            <p id="totalStudents">0</p>
+        </div>
+
+        <div class="stat">
+            <h3>Total Fees</h3>
+            <p id="totalFees">₹0</p>
+        </div>
+
+        <div class="stat">
+            <h3>Pending Fees</h3>
+            <p id="pendingFees">₹0</p>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2 id="formTitle">Add Student</h2>
+
+        <input type="hidden" id="studentId">
+
+        <div class="form-grid">
+            <div>
+                <label>Student Name</label>
+                <input id="studentName" placeholder="Enter student name">
+            </div>
+
+            <div>
+                <label>Room Number</label>
+                <input id="roomNumber" placeholder="Example: A102">
+            </div>
+
+            <div>
+                <label>Admission Date</label>
+                <input type="date" id="admissionDate">
+            </div>
+
+            <div>
+                <label>Total Fees</label>
+                <input type="number" id="totalFeesInput" min="0">
+            </div>
+
+            <div>
+                <label>Fees Paid</label>
+                <input type="number" id="feesPaid" min="0">
+            </div>
+        </div>
+
+        <button onclick="saveStudent()">Save Student</button>
+        <button class="secondary" onclick="clearForm()">Clear</button>
+
+        <div class="message" id="message"></div>
+    </div>
+
+    <div class="panel">
+        <h2>Student Records</h2>
+
+        <button onclick="loadStudents()">Refresh Students</button>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Room</th>
+                        <th>Admission</th>
+                        <th>Total Fees</th>
+                        <th>Paid</th>
+                        <th>Pending</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody id="studentTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Hostel Reports</h2>
+
+        <div class="reports">
+            <button onclick="loadPending()">Pending Fees Report</button>
+            <button onclick="loadRoom()">Room Report</button>
+            <button onclick="loadAdmissions()">Admissions Report</button>
+        </div>
+
+        <div class="form-grid">
+            <input id="reportRoom" placeholder="Enter room number (A102)">
+            <input type="date" id="startDate">
+            <input type="date" id="endDate">
+        </div>
+
+        <div id="reportMessage"></div>
+    </div>
+
+</div>
+
+<footer>
+    Hostel Management System | Spring Boot + MySQL
+</footer>
+
+<script>
+
+const API = "/api/v1/hostel-students";
+
+let students = [];
+
+async function request(url, options = {}) {
+
+    const response = await fetch(url, options);
+
+    if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error || "Request failed: " + response.status);
+    }
+
+    if (response.status === 204) return null;
+
+    return response.json();
+}
+
+// Load all students
+async function loadStudents() {
+
+    try {
+
+        students = await request(API);
+
+        const table = document.getElementById("studentTable");
+        table.innerHTML = "";
+
+        students.forEach(s => {
+
+            table.innerHTML += `
+                <tr>
+                    <td>${s.studentId}</td>
+                    <td>${s.studentName}</td>
+                    <td>${s.roomNumber}</td>
+                    <td>${s.admissionDate}</td>
+                    <td>₹${s.totalFees}</td>
+                    <td>₹${s.feesPaid}</td>
+                    <td>₹${s.pendingFees}</td>
+                    <td>
+                        <button class="edit"
+                        onclick="editStudent(${s.studentId})">Edit</button>
+
+                        <button class="delete"
+                        onclick="deleteStudent(${s.studentId})">Delete</button>
+                    </td>
+                </tr>`;
+
+        });
+
+        document.getElementById("totalStudents").innerText =
+            students.length;
+
+        document.getElementById("totalFees").innerText =
+            "₹" + students.reduce((sum, s) =>
+            sum + Number(s.totalFees), 0);
+
+        document.getElementById("pendingFees").innerText =
+            "₹" + students.reduce((sum, s) =>
+            sum + Number(s.pendingFees), 0);
+
+    } catch (error) {
+
+        alert("Could not load students: " + error.message);
+
+    }
+}
+
+// Add or update student
+async function saveStudent() {
+
+    const id = document.getElementById("studentId").value;
+
+    const student = {
+
+        studentName: document.getElementById("studentName").value.trim(),
+
+        roomNumber: document.getElementById("roomNumber").value.trim(),
+
+        admissionDate: document.getElementById("admissionDate").value,
+
+        totalFees: Number(document.getElementById("totalFeesInput").value),
+
+        feesPaid: Number(document.getElementById("feesPaid").value)
+
+    };
+
+    if (!student.studentName || !student.roomNumber ||
+        !student.admissionDate ||
+        document.getElementById("totalFeesInput").value === "" ||
+        document.getElementById("feesPaid").value === "") {
+
+        alert("Please fill all fields.");
+        return;
+    }
+
+    if (student.totalFees < 0 || student.feesPaid < 0 ||
+        student.feesPaid > student.totalFees) {
+
+        alert("Please enter valid fee amounts.");
+        return;
+    }
+
+    try {
+
+        await request(id ? `${API}/${id}` : API, {
+
+            method: id ? "PUT" : "POST",
+
+            headers: {"Content-Type": "application/json"},
+
+            body: JSON.stringify(student)
+
+        });
+
+        document.getElementById("message").innerText =
+            id ? "Student updated successfully!" :
+            "Student added successfully!";
+
+        clearForm();
+
+        await loadStudents();
+
+    } catch (error) {
+
+        alert("Save failed: " + error.message);
+
+    }
+}
+
+// Edit student
+function editStudent(id) {
+
+    const s = students.find(item => item.studentId === id);
+
+    if (!s) return;
+
+    document.getElementById("studentId").value = s.studentId;
+
+    document.getElementById("studentName").value = s.studentName;
+
+    document.getElementById("roomNumber").value = s.roomNumber;
+
+    document.getElementById("admissionDate").value = s.admissionDate;
+
+    document.getElementById("totalFeesInput").value = s.totalFees;
+
+    document.getElementById("feesPaid").value = s.feesPaid;
+
+    document.getElementById("formTitle").innerText = "Update Student";
+
+    window.scrollTo(0, 0);
+}
+
+// Delete student
+async function deleteStudent(id) {
+
+    if (!confirm("Are you sure you want to delete this student?")) return;
+
+    try {
+
+        await request(`${API}/${id}`, {method: "DELETE"});
+
+        alert("Student deleted successfully!");
+
+        await loadStudents();
+
+    } catch (error) {
+
+        alert("Delete failed: " + error.message);
+
+    }
+}
+
+// Clear form
+function clearForm() {
+
+    document.getElementById("studentId").value = "";
+
+    document.getElementById("studentName").value = "";
+
+    document.getElementById("roomNumber").value = "";
+
+    document.getElementById("admissionDate").value = "";
+
+    document.getElementById("totalFeesInput").value = "";
+
+    document.getElementById("feesPaid").value = "";
+
+    document.getElementById("formTitle").innerText = "Add Student";
+
+}
+
+// Display report in a formatted table
+async function showReport(url, reportTitle) {
+
+    try {
+
+        const data = await request(url);
+
+        const report = document.getElementById("reportMessage");
+
+        if (!data || data.length === 0) {
+
+            report.innerHTML = "<h3>No records found!</h3>";
+
+            return;
+        }
+
+        const columns = [
+            "studentId",
+            "studentName",
+            "roomNumber",
+            "admissionDate",
+            "totalFees",
+            "feesPaid",
+            "pendingFees"
+        ];
+
+        const headings = [
+            "Student ID",
+            "Student Name",
+            "Room Number",
+            "Admission Date",
+            "Total Fees",
+            "Fees Paid",
+            "Pending Fees"
+        ];
+
+        let html = `<h3>${reportTitle}</h3>`;
+
+        html += "<table><thead><tr>";
+
+        headings.forEach(heading => {
+
+            html += `<th>${heading}</th>`;
+
+        });
+
+        html += "</tr></thead><tbody>";
+
+        data.forEach(student => {
+
+            html += "<tr>";
+
+            columns.forEach(column => {
+
+                let value = student[column];
+
+                if (["totalFees", "feesPaid", "pendingFees"].includes(column)) {
+
+                    value = "₹" + Number(value).toLocaleString("en-IN");
+
+                }
+
+                html += `<td>${value ?? ""}</td>`;
+
+            });
+
+            html += "</tr>";
+
+        });
+
+        html += "</tbody></table>";
+
+        report.innerHTML = html;
+
+    } catch (error) {
+
+        alert("Report failed: " + error.message);
+
+    }
+}
+
+// Pending fees report
+function loadPending() {
+
+    showReport(
+        `${API}/reports/pending-fees`,
+        "Pending Fees Report"
+    );
+
+}
+
+// Room report
+function loadRoom() {
+
+    const room = document.getElementById("reportRoom").value.trim();
+
+    if (!room) {
+
+        alert("Enter a room number first.");
+
+        return;
+    }
+
+    showReport(
+        `${API}/reports/room?roomNo=${encodeURIComponent(room)}`,
+        "Room Report"
+    );
+
+}
+
+// Admissions report
+function loadAdmissions() {
+
+    const start = document.getElementById("startDate").value;
+
+    const end = document.getElementById("endDate").value;
+
+    if (!start || !end || start > end) {
+
+        alert("Enter valid start and end dates.");
+
+        return;
+    }
+
+    showReport(
+        `${API}/reports/admissions?start=${start}&end=${end}`,
+        "Admissions Report"
+    );
+
+}
+
+// Load students when page opens
+loadStudents();
+
+</script>
+
+</body>
+</html>

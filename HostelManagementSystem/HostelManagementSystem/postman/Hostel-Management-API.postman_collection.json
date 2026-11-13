@@ -1,0 +1,77 @@
+{
+  "info": {
+    "name": "Hostel Management System API",
+    "description": "Requests for the EAD Spring Boot Laboratory Hostel Management mini project.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Add Student",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"studentName\": \"Akshata Metri\",\n  \"roomNumber\": \"A-103\",\n  \"admissionDate\": \"2026-08-01\",\n  \"totalFees\": 50000.0,\n  \"feesPaid\": 30000.0\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/hostel-students",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "hostel-students"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Display All Students",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/hostel-students"
+      }
+    },
+    {
+      "name": "Get Student By ID",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/hostel-students/1"
+      }
+    },
+    {
+      "name": "Pending Fees Report",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/hostel-students/reports/pending-fees"
+      }
+    },
+    {
+      "name": "Room Report",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/hostel-students/reports/room?roomNo=A-101"
+      }
+    },
+    {
+      "name": "Admission Date Report",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/hostel-students/reports/admissions?start=2026-08-01&end=2026-08-31"
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ]
+}
